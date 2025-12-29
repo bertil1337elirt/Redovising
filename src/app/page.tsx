@@ -110,7 +110,7 @@ export default function Home() {
           </div>
 
           {/* Packages Section */}
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div id="packages" className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {packages.map((pkg, index) => (
               <div
                 key={pkg.id}
