@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function BankIDTestPage() {
+function BankIDTestContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [userData, setUserData] = useState<any>(null);
@@ -272,5 +272,20 @@ export default function BankIDTestPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BankIDTestPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-navy-800 py-8 sm:py-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500 mx-auto mb-4"></div>
+          <p className="text-warm-300">Laddar...</p>
+        </div>
+      </div>
+    }>
+      <BankIDTestContent />
+    </Suspense>
   );
 }
