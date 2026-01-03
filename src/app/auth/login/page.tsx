@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, refreshProfile } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,8 +24,10 @@ export default function LoginPage() {
       setError('Fel e-postadress eller lösenord');
       setLoading(false);
     } else {
+      // Wait a moment for auth state to update, then refresh profile and redirect
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await refreshProfile();
       router.push('/');
-      router.refresh();
     }
   };
 

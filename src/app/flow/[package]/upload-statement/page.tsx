@@ -1,26 +1,76 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import FlowContainer from '@/components/FlowContainer';
 import { Bank } from '@/types';
+import { uploadFile, generateOrderId } from '@/lib/uploadFile';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function UploadStatementPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { user } = useAuth();
   const packageType = params.package as string;
   const bankId = searchParams.get('bank') as Bank;
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string>('');
+  const [orderId, setOrderId] = useState<string>('');
 
   const totalSteps = packageType === 'ne-bilaga' ? 5 : 5;
 
+  // Generate or retrieve order ID
+  useEffect(() => {
+    let id = sessionStorage.getItem('tempOrderId');
+    if (!id) {
+      id = generateOrderId();
+      sessionStorage.setItem('tempOrderId', id);
+    }
+    setOrderId(id);
+  }, []);
+
+  const handleFileUpload = async (file: File) => {
+    setSelectedFile(file);
+    setUploadError('');
+    setUploading(true);
+
+    try {
+      const result = await uploadFile(
+        file,
+        orderId,
+        'statement',
+        user?.id || null,
+        null, // Guest email (not available yet on this page)
+        null  // Guest name (not available yet on this page)
+      );
+
+      if (result.error) {
+        setUploadError(result.error);
+        setSelectedFile(null);
+      } else {
+        // Store file info in sessionStorage
+        sessionStorage.setItem('statementFileUrl', result.url);
+        sessionStorage.setItem('statementFilePath', result.path);
+        if (result.fileId) {
+          sessionStorage.setItem('statementFileId', result.fileId);
+        }
+      }
+    } catch (error) {
+      setUploadError('Ett oväntat fel uppstod vid uppladdning.');
+      setSelectedFile(null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
+    if (file && orderId) {
+      handleFileUpload(file);
     }
   };
 
@@ -29,8 +79,8 @@ export default function UploadStatementPage() {
     setIsDragging(false);
 
     const file = event.dataTransfer.files?.[0];
-    if (file) {
-      setSelectedFile(file);
+    if (file && orderId) {
+      handleFileUpload(file);
     }
   };
 
@@ -44,8 +94,7 @@ export default function UploadStatementPage() {
   };
 
   const handleContinue = () => {
-    if (selectedFile) {
-      // I framtiden: Ladda upp filen till servern här
+    if (selectedFile && !uploading) {
       if (packageType === 'ne-bilaga') {
         router.push(`/flow/${packageType}/upload-previous?bank=${bankId}`);
       } else {
@@ -74,7 +123,29 @@ export default function UploadStatementPage() {
             : 'border-navy-600 bg-navy-800/30 hover:border-gold-500/30 hover:bg-navy-800/50'
         }`}
       >
-        {selectedFile ? (
+        {uploading ? (
+          <div>
+            <div className="w-20 h-20 bg-gold-500/20 border-2 border-gold-500 rounded-xl flex items-center justify-center mx-auto mb-6 animate-pulse">
+              <svg
+                className="w-10 h-10 text-gold-500 animate-spin"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">
+              Laddar upp fil...
+            </h3>
+            <p className="text-warm-300">Vänta medan filen laddas upp</p>
+          </div>
+        ) : selectedFile ? (
           <div>
             <div className="w-20 h-20 bg-gold-500/20 border-2 border-gold-500 rounded-xl flex items-center justify-center mx-auto mb-6">
               <svg
@@ -99,7 +170,11 @@ export default function UploadStatementPage() {
               {(selectedFile.size / 1024).toFixed(2)} KB
             </p>
             <button
-              onClick={() => setSelectedFile(null)}
+              onClick={() => {
+                setSelectedFile(null);
+                sessionStorage.removeItem('statementFileUrl');
+                sessionStorage.removeItem('statementFilePath');
+              }}
               className="text-gold-500 hover:text-gold-400 font-semibold transition-colors"
             >
               Välj en annan fil
@@ -131,16 +206,30 @@ export default function UploadStatementPage() {
               <input
                 type="file"
                 onChange={handleFileSelect}
-                accept=".pdf,.xlsx,.xls"
+                accept=".csv,.xlsx,.xls"
                 className="hidden"
               />
             </label>
             <p className="text-sm text-warm-500 mt-6">
-              Godkända filformat: PDF, Excel (.xlsx, .xls)
+              Godkända filformat: CSV, Excel (.xlsx, .xls, .csv)
             </p>
           </div>
         )}
       </div>
+
+      {uploadError && (
+        <div className="mt-6 bg-red-500/10 border border-red-500/50 rounded-xl p-4">
+          <div className="flex items-start">
+            <svg className="w-5 h-5 text-red-400 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <h4 className="font-semibold text-red-400 mb-1">Uppladdning misslyckades</h4>
+              <p className="text-sm text-red-300">{uploadError}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-8 bg-navy-800/50 border border-navy-600 rounded-xl p-6">
         <div className="flex items-start">
@@ -174,14 +263,14 @@ export default function UploadStatementPage() {
         </button>
         <button
           onClick={handleContinue}
-          disabled={!selectedFile}
+          disabled={!selectedFile || uploading}
           className={`px-8 py-3 rounded-xl font-bold transition-all duration-200 ${
-            selectedFile
+            selectedFile && !uploading
               ? 'bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-navy-900 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/40 hover:scale-105'
               : 'bg-navy-600 text-navy-400 cursor-not-allowed'
           }`}
         >
-          Fortsätt →
+          {uploading ? 'Laddar upp...' : 'Fortsätt →'}
         </button>
       </div>
     </FlowContainer>

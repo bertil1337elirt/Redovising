@@ -52,7 +52,7 @@ export default function Home() {
                     </div>
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-3">
-                    Välkommen tillbaka, {profile?.full_name || 'tillbaka'}!
+                    Välkommen tillbaka{profile?.full_name ? `, ${profile.full_name}` : ''}!
                   </h2>
                   <p className="text-warm-300 text-lg">
                     Du har gjort {profile?.order_count || 0} {profile?.order_count === 1 ? 'beställning' : 'beställningar'} hos oss tidigare.
@@ -69,7 +69,7 @@ export default function Home() {
                     </div>
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-3">
-                    Välkommen, {profile?.full_name}!
+                    Välkommen{profile?.full_name ? `, ${profile.full_name}` : ''}!
                   </h2>
                   <p className="text-warm-300 text-lg">
                     Detta är din första beställning hos oss. Vi guidar dig genom hela processen steg för steg.

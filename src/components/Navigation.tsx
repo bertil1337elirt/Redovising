@@ -67,17 +67,16 @@ export default function Navigation() {
             {!loading && (
               <>
                 {user ? (
-                  <div className="flex items-center space-x-2 ml-4">
-                    <span className="text-sm text-warm-300 px-3 py-2">
-                      {profile?.full_name || user.email}
-                    </span>
-                    <button
-                      onClick={() => signOut()}
-                      className="px-4 py-2 text-sm font-semibold text-warm-300 hover:text-white hover:bg-navy-800 rounded-lg transition-all duration-200"
-                    >
-                      Logga ut
-                    </button>
-                  </div>
+                  <Link
+                    href="/account"
+                    className={`ml-4 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                      isActive('/account')
+                        ? 'bg-gold-500/10 text-gold-500'
+                        : 'text-warm-300 hover:text-white hover:bg-navy-800'
+                    }`}
+                  >
+                    Min profil
+                  </Link>
                 ) : (
                   <div className="flex items-center space-x-2 ml-4">
                     <Link

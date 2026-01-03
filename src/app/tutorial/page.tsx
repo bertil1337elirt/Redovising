@@ -129,7 +129,7 @@ export default function TutorialPage() {
               </p>
               <div className="ml-14 bg-navy-800/50 border border-navy-600 rounded-lg p-4">
                 <p className="text-sm text-warm-300">
-                  <strong className="text-gold-500">Tips:</strong> Se till att filerna är i PDF eller Excel-format
+                  <strong className="text-gold-500">Tips:</strong> Se till att filerna är i CSV eller Excel-format
                   och att alla transaktioner syns tydligt.
                 </p>
               </div>
@@ -215,7 +215,7 @@ export default function TutorialPage() {
                     <li>Välj det konto som du använder för din verksamhet</li>
                     <li>Leta efter alternativet "Kontoutdrag" eller "Transaktioner"</li>
                     <li>Välj tidsperiod: Hela föregående år (1 januari - 31 december)</li>
-                    <li>Välj format: PDF eller Excel</li>
+                    <li>Välj format: CSV eller Excel</li>
                     <li>Klicka på "Ladda ner" eller "Exportera"</li>
                   </ol>
                 </div>
@@ -255,7 +255,7 @@ export default function TutorialPage() {
                 </div>
                 <div className="bg-navy-800/50 border border-navy-600 rounded-lg p-4">
                   <p className="text-sm text-warm-300">
-                    <strong className="text-gold-500">Godkända format:</strong> PDF och Excel (.xlsx, .xls)
+                    <strong className="text-gold-500">Godkända format:</strong> CSV och Excel (.xlsx, .xls, .csv)
                   </p>
                 </div>
               </div>

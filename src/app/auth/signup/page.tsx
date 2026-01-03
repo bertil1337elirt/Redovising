@@ -11,7 +11,7 @@ export default function SignupPage() {
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  const { signUp, refreshProfile } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,8 +31,10 @@ export default function SignupPage() {
       setError(error.message || 'Ett fel uppstod vid registrering');
       setLoading(false);
     } else {
+      // Wait a moment for auth state to update, then refresh profile and redirect
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await refreshProfile();
       router.push('/');
-      router.refresh();
     }
   };
 

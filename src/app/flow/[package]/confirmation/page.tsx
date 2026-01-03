@@ -33,6 +33,10 @@ export default function ConfirmationPage() {
     const saveOrder = async () => {
       if (orderSaved) return; // Prevent duplicate saves
 
+      // Retrieve uploaded file IDs from sessionStorage
+      const statementFileId = sessionStorage.getItem('statementFileId');
+      const previousFileId = sessionStorage.getItem('previousFileId');
+
       const orderData = {
         user_id: user?.id || null,
         guest_email: user ? null : email,
@@ -44,10 +48,36 @@ export default function ConfirmationPage() {
         status: 'pending',
       };
 
-      const { error } = await supabase.from('orders').insert(orderData);
+      const { data: newOrder, error } = await supabase
+        .from('orders')
+        .insert(orderData)
+        .select('id')
+        .single();
 
-      if (!error) {
+      if (!error && newOrder) {
         setOrderSaved(true);
+
+        // Link uploaded files to the order
+        const fileIds = [statementFileId, previousFileId].filter(Boolean);
+        if (fileIds.length > 0) {
+          await supabase
+            .from('files')
+            .update({
+              order_id: newOrder.id,
+              guest_email: user ? null : email,
+              guest_name: user ? null : name,
+            })
+            .in('id', fileIds);
+        }
+
+        // Clean up sessionStorage
+        sessionStorage.removeItem('statementFileUrl');
+        sessionStorage.removeItem('statementFilePath');
+        sessionStorage.removeItem('statementFileId');
+        sessionStorage.removeItem('previousFileUrl');
+        sessionStorage.removeItem('previousFilePath');
+        sessionStorage.removeItem('previousFileId');
+        sessionStorage.removeItem('tempOrderId');
 
         // Increment order count for logged-in users
         if (user) {

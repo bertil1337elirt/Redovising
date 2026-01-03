@@ -13,8 +13,17 @@ export default function KontaktPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // I framtiden: Skicka formulärdata till backend
-    console.log('Form submitted:', formData);
+
+    // Create mailto link with form data
+    const subject = `Kontaktförfrågan från ${formData.name}`;
+    const body = `Namn: ${formData.name}\nE-post: ${formData.email}\nTelefon: ${formData.phone || 'Ej angiven'}\n\nMeddelande:\n${formData.message}`;
+
+    const mailtoLink = `mailto:erik@enklabokslut.se?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    // Open email client
+    window.location.href = mailtoLink;
+
+    // Show success message
     setIsSubmitted(true);
   };
 
@@ -66,10 +75,10 @@ export default function KontaktPage() {
                 <div>
                   <h3 className="font-semibold text-white mb-1">E-post</h3>
                   <a
-                    href="mailto:info@redovisningsbyran.se"
+                    href="mailto:erik@enklabokslut.se"
                     className="text-gold-500 hover:text-gold-400 transition-colors"
                   >
-                    info@redovisningsbyran.se
+                    erik@enklabokslut.se
                   </a>
                 </div>
               </div>

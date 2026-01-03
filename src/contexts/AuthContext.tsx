@@ -72,15 +72,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
+      },
     });
 
     if (data.user && !error) {
-      // Create profile
-      await supabase.from('profiles').insert({
+      // Create or update profile (upsert to handle trigger-created profiles)
+      await supabase.from('profiles').upsert({
         id: data.user.id,
         email,
         full_name: fullName,
         order_count: 0,
+      }, {
+        onConflict: 'id'
       });
     }
 
