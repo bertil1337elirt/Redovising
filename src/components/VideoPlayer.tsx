@@ -1,11 +1,20 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+
 interface VideoPlayerProps {
   videoUrl: string;
   title: string;
 }
 
 export default function VideoPlayer({ videoUrl, title }: VideoPlayerProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.volume = 1.0; // Max volume
+    }
+  }, [videoUrl]);
   // If no video URL is provided, show placeholder
   if (!videoUrl || videoUrl === '') {
     return (
@@ -47,6 +56,7 @@ export default function VideoPlayer({ videoUrl, title }: VideoPlayerProps) {
     <div className="bg-navy-900 border border-navy-600 rounded-xl overflow-hidden shadow-xl">
       <div className="aspect-video bg-navy-800">
         <video
+          ref={videoRef}
           controls
           className="w-full h-full"
           preload="metadata"
