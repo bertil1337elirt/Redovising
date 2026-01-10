@@ -141,6 +141,34 @@ export default function TutorialPage() {
                   4
                 </div>
                 <h2 className="text-lg sm:text-2xl font-bold text-white">
+                  Lägg till manuella transaktioner (valfritt)
+                </h2>
+              </div>
+              <p className="text-sm sm:text-base text-warm-300 mb-3 sm:mb-4 ml-11 sm:ml-14">
+                Lägg till transaktioner som inte syns i ditt kontoutdrag, till exempel kontantbetalningar eller fakturor.
+              </p>
+              <div className="ml-0 sm:ml-14 bg-navy-800/50 border border-navy-600 rounded-lg p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-warm-300 mb-2">
+                  <strong className="text-gold-500">För varje transaktion anger du:</strong>
+                </p>
+                <ul className="space-y-1 text-xs sm:text-sm text-warm-300 list-disc list-inside ml-2">
+                  <li>Datum</li>
+                  <li>Beskrivning (t.ex. "Kontorsmaterial", "Konsultarvode")</li>
+                  <li>Belopp i kronor</li>
+                  <li>Typ: Inkomst eller Utgift</li>
+                </ul>
+                <p className="text-xs sm:text-sm text-warm-400 mt-3">
+                  Detta steg är helt valfritt och kan hoppas över om du inte har några manuella transaktioner att lägga till.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-navy-700/50 backdrop-blur-sm border border-navy-600 rounded-xl sm:rounded-2xl p-6 sm:p-8">
+              <div className="flex items-center mb-3 sm:mb-4">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gold-500 text-navy-900 rounded-full flex items-center justify-center font-bold mr-3 sm:mr-4 text-sm sm:text-base flex-shrink-0">
+                  5
+                </div>
+                <h2 className="text-lg sm:text-2xl font-bold text-white">
                   Ladda upp tidigare NE-bilaga (valfritt)
                 </h2>
               </div>
@@ -153,7 +181,7 @@ export default function TutorialPage() {
             <div className="bg-navy-700/50 backdrop-blur-sm border border-navy-600 rounded-xl sm:rounded-2xl p-6 sm:p-8">
               <div className="flex items-center mb-3 sm:mb-4">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gold-500 text-navy-900 rounded-full flex items-center justify-center font-bold mr-3 sm:mr-4 text-sm sm:text-base flex-shrink-0">
-                  5
+                  6
                 </div>
                 <h2 className="text-lg sm:text-2xl font-bold text-white">
                   Bekräfta och vänta
@@ -267,6 +295,36 @@ export default function TutorialPage() {
                   4
                 </div>
                 <h2 className="text-lg sm:text-2xl font-bold text-white">
+                  Lägg till manuella transaktioner (valfritt)
+                </h2>
+              </div>
+              <div className="ml-0 sm:ml-14 space-y-3">
+                <p className="text-sm sm:text-base text-warm-300">
+                  Lägg till transaktioner som inte syns i ditt kontoutdrag, till exempel kontantbetalningar eller fakturor.
+                </p>
+                <div className="bg-navy-800/50 border border-navy-600 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-warm-300 mb-2">
+                    <strong className="text-gold-500">För varje transaktion anger du:</strong>
+                  </p>
+                  <ul className="space-y-1 text-xs sm:text-sm text-warm-300 list-disc list-inside ml-2">
+                    <li>Datum</li>
+                    <li>Beskrivning (t.ex. "Kontorsmaterial", "Konsultarvode")</li>
+                    <li>Belopp i kronor</li>
+                    <li>Typ: Inkomst eller Utgift</li>
+                  </ul>
+                  <p className="text-xs sm:text-sm text-warm-400 mt-3">
+                    Detta steg är helt valfritt och kan hoppas över om du inte har några manuella transaktioner att lägga till.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-navy-700/50 backdrop-blur-sm border border-navy-600 rounded-xl sm:rounded-2xl p-6 sm:p-8">
+              <div className="flex items-center mb-3 sm:mb-4">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gold-500 text-navy-900 rounded-full flex items-center justify-center font-bold mr-3 sm:mr-4 text-sm sm:text-base flex-shrink-0">
+                  5
+                </div>
+                <h2 className="text-lg sm:text-2xl font-bold text-white">
                   Ge oss behörighet via Skatteverket
                 </h2>
               </div>
@@ -321,7 +379,7 @@ export default function TutorialPage() {
             <div className="bg-navy-700/50 backdrop-blur-sm border border-navy-600 rounded-xl sm:rounded-2xl p-6 sm:p-8">
               <div className="flex items-center mb-3 sm:mb-4">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gold-500 text-navy-900 rounded-full flex items-center justify-center font-bold mr-3 sm:mr-4 text-sm sm:text-base flex-shrink-0">
-                  5
+                  6
                 </div>
                 <h2 className="text-lg sm:text-2xl font-bold text-white">
                   Granska och godkänn
