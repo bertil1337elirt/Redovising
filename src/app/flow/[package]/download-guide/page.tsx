@@ -89,10 +89,10 @@ export default function DownloadGuidePage() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center pt-6 border-t border-navy-600">
+      <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 border-t border-navy-600">
         <button
           onClick={() => router.back()}
-          className="text-warm-300 hover:text-white font-semibold transition-colors flex items-center"
+          className="text-warm-300 hover:text-white font-semibold transition-colors flex items-center justify-center sm:justify-start py-3 sm:py-0"
         >
           <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -101,9 +101,10 @@ export default function DownloadGuidePage() {
         </button>
         <button
           onClick={handleContinue}
-          className="px-8 py-3 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-navy-900 rounded-xl font-bold transition-all duration-200 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/40 hover:scale-105"
+          className="px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-navy-900 rounded-xl font-bold transition-all duration-200 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/40 hover:scale-105 text-sm sm:text-base w-full sm:w-auto"
         >
-          Jag har laddat ner mina kontoutdrag →
+          <span className="sm:hidden">Fortsätt →</span>
+          <span className="hidden sm:inline">Jag har laddat ner mina kontoutdrag →</span>
         </button>
       </div>
     </FlowContainer>
