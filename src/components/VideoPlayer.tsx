@@ -13,6 +13,7 @@ export default function VideoPlayer({ videoUrl, title }: VideoPlayerProps) {
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.volume = 1.0; // Max volume
+      videoRef.current.load(); // Reload video when URL changes
     }
   }, [videoUrl]);
   // If no video URL is provided, show placeholder
