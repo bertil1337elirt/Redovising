@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { UNDERLAG_FALT, UNDERLAG_FORMAT } from '@/lib/underlag-krav';
+import UnderlagDropZone from '@/components/UnderlagDropZone';
 
 const NAV_BG = '#173b57';
 const CORAL = '#E95C63';
@@ -131,9 +133,85 @@ export default function HomePage() {
         <p className="text-slate-400 text-sm mt-1.5">Vad vill du göra idag?</p>
       </div>
 
-      {/* Personlig guide-banner */}
+      {/* Huvudsaken: ladda upp underlag. Det är det de flesta kommer hit för,
+          så uppladdningen ligger direkt här — den som vet vilken fil hen ska
+          skicka ska slippa gå via /bokforing/ladda-upp. Kraven står bredvid,
+          samma lista som uppladdningssidan visar. */}
+      <div className="px-8 pt-6 grid grid-cols-1 lg:grid-cols-5 gap-3 lg:gap-4 max-w-4xl lg:max-w-5xl">
+        <div
+          className="lg:col-span-3 rounded-2xl p-7 lg:p-8 text-white shadow-lg"
+          style={{ backgroundColor: NAV_BG }}
+        >
+          <span
+            className="inline-block text-[11px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
+            style={{ backgroundColor: CORAL }}
+          >
+            Vanligast
+          </span>
+          <h2 className="text-2xl lg:text-3xl font-extrabold tracking-tight mt-5">Ladda upp underlag</h2>
+          <p className="text-sm text-white/70 mt-2 leading-relaxed max-w-md">
+            Transaktionslista från Zettle, PayPal, Stripe eller din bank. Dra in filen här så sköter vi bokföringen.
+          </p>
+          <UnderlagDropZone />
+        </div>
+
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6">
+          <h2 className="font-bold text-slate-800 mb-1">Vad ska filen innehålla?</h2>
+          <p className="text-xs text-slate-400 mb-4">Finns de här kolumnerna kan vi bokföra filen direkt.</p>
+          <ul className="space-y-2">
+            {UNDERLAG_FALT.map(f => (
+              <li key={f.label} className="flex items-center gap-2.5">
+                <span className={`w-[68px] text-center text-xs font-bold px-1.5 py-0.5 rounded-md flex-shrink-0 ${f.required ? 'bg-rose-100 text-rose-600' : 'bg-slate-200 text-slate-500'}`}>
+                  {f.required ? 'Krav' : 'Bra att ha'}
+                </span>
+                <span className="text-sm font-semibold text-slate-700">{f.label}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-slate-400 mt-4">{UNDERLAG_FORMAT}</p>
+        </div>
+      </div>
+
+      {/* Kort-grid. Rubriken finns för att korten annars läser som ett gäng
+          knappar utan sammanhang, nu när uppladdningen tagit över toppen. */}
+      <div className="px-8 pt-14 max-w-4xl lg:max-w-5xl">
+        <h2 className="text-lg font-extrabold text-slate-800 tracking-tight">Resten av företaget</h2>
+        <p className="text-sm text-slate-400 mt-1">
+          Fakturor, rapporter och moms — det du gör mellan uppladdningarna.
+        </p>
+      </div>
+
+      <div className="px-8 pt-5 pb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4 max-w-4xl lg:max-w-5xl">
+        {actions.map(action => (
+          <Link
+            key={action.href}
+            href={action.href}
+            className="group flex lg:flex-col items-center lg:items-start gap-4 bg-white rounded-2xl border border-slate-200 p-5 lg:p-7 hover:border-slate-300 hover:shadow-lg transition-all duration-150"
+          >
+            <div
+              className="w-11 h-11 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: action.bg, color: action.color }}
+            >
+              {action.icon}
+            </div>
+            <div className="min-w-0 flex-1 lg:flex-none">
+              <p className="font-bold text-slate-800 text-[15px] lg:text-[17px] leading-snug lg:mt-4">{action.title}</p>
+              <p className="text-xs lg:text-sm text-slate-600 mt-0.5 leading-snug line-clamp-2">{action.description}</p>
+            </div>
+            <svg
+              className="w-4 h-4 text-slate-300 flex-shrink-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-150 lg:hidden"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        ))}
+      </div>
+
+      {/* Personlig guide-banner. Ligger under korten sedan uppladdningen tog
+          över toppen — bara en av dem visas, beroende på bokföringsmetod. */}
       {activeBokforing === 'excel-kalkylark' && (
-        <div className="px-8 pt-2 pb-0">
+        <div className="px-8 pb-8">
           <Link
             href={profile?.skicka_in_metod === 'maila-fil' ? '/skicka-in/excel-mail' : '/skicka-in/excel'}
             className="group block bg-white border-2 border-emerald-100 hover:border-emerald-300 hover:shadow-lg rounded-2xl px-6 py-5 transition-all duration-150"
@@ -169,7 +247,7 @@ export default function HomePage() {
         </div>
       )}
       {activeBokforing === 'hemsidan' && (
-        <div className="px-8 pt-2 pb-0">
+        <div className="px-8 pb-8">
           <Link href="/skicka-in/hemsidan" className="group block bg-white border-2 border-emerald-100 hover:border-emerald-300 hover:shadow-lg rounded-2xl px-6 py-5 transition-all duration-150">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-4">
@@ -196,7 +274,7 @@ export default function HomePage() {
         </div>
       )}
       {activeBokforing === 'maila-underlag' && (
-        <div className="px-8 pt-2 pb-0">
+        <div className="px-8 pb-8">
           <Link href="/skicka-in/underlag" className="group block bg-white border-2 border-emerald-100 hover:border-emerald-300 hover:shadow-lg rounded-2xl px-6 py-5 transition-all duration-150">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-4">
@@ -222,34 +300,6 @@ export default function HomePage() {
           </Link>
         </div>
       )}
-
-      {/* Kort-grid */}
-      <div className="px-8 py-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4 max-w-4xl lg:max-w-5xl">
-        {actions.map(action => (
-          <Link
-            key={action.href}
-            href={action.href}
-            className="group flex lg:flex-col items-center lg:items-start gap-4 bg-white rounded-2xl border border-slate-200 p-5 lg:p-7 hover:border-slate-300 hover:shadow-lg transition-all duration-150"
-          >
-            <div
-              className="w-11 h-11 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: action.bg, color: action.color }}
-            >
-              {action.icon}
-            </div>
-            <div className="min-w-0 flex-1 lg:flex-none">
-              <p className="font-bold text-slate-800 text-[15px] lg:text-[17px] leading-snug lg:mt-4">{action.title}</p>
-              <p className="text-xs lg:text-sm text-slate-600 mt-0.5 leading-snug line-clamp-2">{action.description}</p>
-            </div>
-            <svg
-              className="w-4 h-4 text-slate-300 flex-shrink-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-150 lg:hidden"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        ))}
-      </div>
 
     </div>
   );

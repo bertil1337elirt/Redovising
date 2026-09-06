@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { uploadUnderlag } from '@/lib/bokforing-underlag';
+import { UNDERLAG_FALT, UNDERLAG_VALUTA_NOT, UNDERLAG_FORMAT } from '@/lib/underlag-krav';
 
 const NAV_BG = '#173b57';
 const ACCENT = '#0891B2';
@@ -132,14 +133,7 @@ export default function LaddaUppPage() {
           <h2 className="font-bold text-slate-800 mb-1">Vad ska filen innehålla?</h2>
           <p className="text-sm text-slate-400 mb-4">För att vi ska kunna bokföra transaktionerna korrekt behöver filen innehålla dessa kolumner:</p>
           <div className="grid grid-cols-2 gap-3 mb-4">
-            {[
-              { label: 'Datum', desc: 'Transaktionsdatum', required: true },
-              { label: 'Beskrivning', desc: 'Vad gäller transaktionen', required: true },
-              { label: 'Belopp', desc: 'Transaktionsbelopp', required: true },
-              { label: 'Moms', desc: 'Momsbelopp', required: true },
-              { label: 'Valuta*', desc: 'Krav om transaktionen inte är i SEK', required: true },
-              { label: 'Avgifter', desc: 'Provisioner eller avgifter', required: false },
-            ].map(f => (
+            {UNDERLAG_FALT.map(f => (
               <div key={f.label} className="flex items-start gap-2.5 bg-slate-50 rounded-xl p-3">
                 <span className={`text-xs font-bold px-1.5 py-0.5 rounded-md mt-0.5 flex-shrink-0 ${f.required ? 'bg-rose-100 text-rose-600' : 'bg-slate-200 text-slate-500'}`}>
                   {f.required ? 'Krav' : 'Bra att ha'}
@@ -151,8 +145,71 @@ export default function LaddaUppPage() {
               </div>
             ))}
           </div>
-          <p className="text-xs text-slate-700 mb-2">* Valuta behövs bara om transaktionerna inte är i SEK — Zettle, Stripe och PayPal använder ofta USD eller EUR.</p>
-          <p className="text-xs text-slate-400">Vi stödjer CSV, Excel, PDF och bilder</p>
+          <p className="text-xs text-slate-700 mb-2">{UNDERLAG_VALUTA_NOT}</p>
+          <p className="text-xs text-slate-400">{UNDERLAG_FORMAT}</p>
+        </div>
+
+        {/* Drop zone */}
+        <div
+          onDragOver={e => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={handleDrop}
+          onClick={() => fileRef.current?.click()}
+          className="bg-white rounded-2xl border-2 border-dashed p-8 flex flex-col items-center justify-center cursor-pointer transition-all duration-150"
+          style={{ borderColor: dragging ? ACCENT : files.length > 0 ? '#059669' : '#E2E8F0', backgroundColor: dragging ? '#ECFEFF' : undefined }}
+        >
+          <input ref={fileRef} type="file" accept=".csv,.xlsx,.xls,.pdf,.png,.jpg,.jpeg" multiple onChange={handleChange} className="hidden" />
+          {files.length > 0 ? (
+            <div className="w-full space-y-2">
+              {files.map((f, i) => (
+                <div key={i} className="flex items-center gap-3 bg-emerald-50 rounded-xl px-4 py-2.5">
+                  <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-sm font-medium text-slate-700 truncate flex-1">{f.name}</span>
+                  <span className="text-xs text-slate-400 flex-shrink-0">{(f.size / 1024).toFixed(0)} KB</span>
+                  <button
+                    onClick={e => { e.stopPropagation(); removeFile(i); }}
+                    className="w-5 h-5 rounded-full flex items-center justify-center text-slate-300 hover:text-red-400 hover:bg-red-50 transition-colors flex-shrink-0"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+              <p className="text-xs text-slate-400 text-center pt-2">Dra hit fler filer eller klicka för att lägga till</p>
+            </div>
+          ) : (
+            <>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: '#ECFEFF' }}>
+                <svg className="w-6 h-6" fill="none" stroke={ACCENT} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+              </div>
+              <p className="font-semibold text-slate-700 text-sm">Dra och släpp dina filer här</p>
+              <p className="text-xs text-slate-400 mt-1">eller klicka för att välja · CSV, XLSX, XLS, PDF, PNG, JPG</p>
+            </>
+          )}
+        </div>
+
+        {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+
+        <div className="flex gap-3">
+          <button
+            onClick={uploadAll}
+            disabled={files.length === 0}
+            className="flex-1 py-3.5 text-sm font-bold text-white rounded-2xl transition-opacity disabled:opacity-40"
+            style={{ backgroundColor: NAV_BG }}
+          >
+            Skicka in underlaget
+          </button>
+          <button
+            onClick={() => fileRef.current?.click()}
+            className="flex-1 py-3.5 text-sm font-bold rounded-2xl border-2 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+          >
+            Ladda upp fler filer
+          </button>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
@@ -229,69 +286,6 @@ export default function LaddaUppPage() {
               );
             })}
           </div>}
-        </div>
-
-        {/* Drop zone */}
-        <div
-          onDragOver={e => { e.preventDefault(); setDragging(true); }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={handleDrop}
-          onClick={() => fileRef.current?.click()}
-          className="bg-white rounded-2xl border-2 border-dashed p-8 flex flex-col items-center justify-center cursor-pointer transition-all duration-150"
-          style={{ borderColor: dragging ? ACCENT : files.length > 0 ? '#059669' : '#E2E8F0', backgroundColor: dragging ? '#ECFEFF' : undefined }}
-        >
-          <input ref={fileRef} type="file" accept=".csv,.xlsx,.xls,.pdf,.png,.jpg,.jpeg" multiple onChange={handleChange} className="hidden" />
-          {files.length > 0 ? (
-            <div className="w-full space-y-2">
-              {files.map((f, i) => (
-                <div key={i} className="flex items-center gap-3 bg-emerald-50 rounded-xl px-4 py-2.5">
-                  <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-sm font-medium text-slate-700 truncate flex-1">{f.name}</span>
-                  <span className="text-xs text-slate-400 flex-shrink-0">{(f.size / 1024).toFixed(0)} KB</span>
-                  <button
-                    onClick={e => { e.stopPropagation(); removeFile(i); }}
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-slate-300 hover:text-red-400 hover:bg-red-50 transition-colors flex-shrink-0"
-                  >
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-              <p className="text-xs text-slate-400 text-center pt-2">Dra hit fler filer eller klicka för att lägga till</p>
-            </div>
-          ) : (
-            <>
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: '#ECFEFF' }}>
-                <svg className="w-6 h-6" fill="none" stroke={ACCENT} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
-              </div>
-              <p className="font-semibold text-slate-700 text-sm">Dra och släpp dina filer här</p>
-              <p className="text-xs text-slate-400 mt-1">eller klicka för att välja · CSV, XLSX, XLS, PDF, PNG, JPG</p>
-            </>
-          )}
-        </div>
-
-        {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-
-        <div className="flex gap-3">
-          <button
-            onClick={uploadAll}
-            disabled={files.length === 0}
-            className="flex-1 py-3.5 text-sm font-bold text-white rounded-2xl transition-opacity disabled:opacity-40"
-            style={{ backgroundColor: NAV_BG }}
-          >
-            Skicka in underlaget
-          </button>
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="flex-1 py-3.5 text-sm font-bold rounded-2xl border-2 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
-          >
-            Ladda upp fler filer
-          </button>
         </div>
       </div>
     </div>
