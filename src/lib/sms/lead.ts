@@ -94,7 +94,7 @@ export const WELCOME_SMS =
 export function bookingSms(date: string, time: string): string {
   return (
     `Hej! Erik på EnklaBokslut här. Din tid är bokad: ${formatMeetingDate(date)} kl. ${time}. ` +
-    'Jag ringer upp dig då. Bekräftelsen har gått till din mejl, kika gärna i skräpposten också.\n\n' +
+    'Jag ringer upp dig då. Bekräftelsen har gått till din mejl.\n\n' +
     'Hälsningar\nErik på EnklaBokslut'
   );
 }
