@@ -141,6 +141,18 @@ export default function PersonPage() {
         </div>
       </div>
 
+      {/* Vad personen sagt om sin verksamhet — samma text AI:n får med sig */}
+      <div className="bg-navy-700/50 border border-navy-600 rounded-xl p-6">
+        <h2 className="text-xs font-semibold text-warm-400 uppercase tracking-widest mb-3">Kundkontext</h2>
+        {person.verksamhet ? (
+          <p className="text-warm-100 text-sm whitespace-pre-wrap break-words">{person.verksamhet}</p>
+        ) : (
+          <p className="text-warm-500 text-sm">
+            Ingen verksamhetsbeskrivning ifylld{person.isCustomer ? '' : ' — personen har inget konto än'}.
+          </p>
+        )}
+      </div>
+
       {/* Var i flödet personen står */}
       <div className="bg-navy-700/50 border border-navy-600 rounded-xl p-6">
         <h2 className="text-xs font-semibold text-warm-400 uppercase tracking-widest mb-5">Flöde</h2>

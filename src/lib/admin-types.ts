@@ -28,6 +28,8 @@ export interface Person {
   email: string | null;
   phone: string | null;
   company: string | null;
+  /** Kundens egen beskrivning av vad firman gör (`profiles.verksamhet`). */
+  verksamhet: string | null;
   source: string | null;
   stage: number | null;
   /** Raden i contact_requests som steget skrivs till. Saknas den går steget inte att ändra. */

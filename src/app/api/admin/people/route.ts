@@ -98,7 +98,7 @@ async function build(): Promise<Map<string, Built>> {
   ] = await Promise.all([
     supabase.from('contact_requests').select('id, name, email, phone, ref, stage, notes, package_type, contact_method, qualification_answers, created_at'),
     supabase.from('meetings').select('id, name, email, phone, date, time, message, created_at'),
-    supabase.from('profiles').select('id, email, full_name, phone, company_name, created_at, onboarding_done, subscription_status'),
+    supabase.from('profiles').select('id, email, full_name, phone, company_name, verksamhet, created_at, onboarding_done, subscription_status'),
     supabase.from('pending_registrations').select('id, email, source, created_at, expires_at, used_at'),
     supabase.from('email_threads').select('id, user_id, state, created_at, updated_at'),
     supabase.from('sms_messages').select('id, phone, direction, body, status, error, kind, created_at').order('created_at'),
@@ -168,7 +168,7 @@ async function build(): Promise<Map<string, Built>> {
     if (!found) {
       found = {
         key: root, name: null, email: null, phone: null, company: null,
-        source: null, stage: null, contactId: null, isCustomer: false,
+        verksamhet: null, source: null, stage: null, contactId: null, isCustomer: false,
         optedOut: false, emailCount: 0, smsCount: 0,
         firstSeen: '', lastActivity: '', events: [], aliases: [], seen: [],
       };
@@ -248,6 +248,7 @@ async function build(): Promise<Map<string, Built>> {
       // Profilen är den mest tillförlitliga källan till namn och företag
       if (r.full_name?.trim()) p.name = r.full_name.trim();
       if (r.company_name?.trim()) p.company = r.company_name.trim();
+      if (r.verksamhet?.trim()) p.verksamhet = r.verksamhet.trim();
     }
   }
 
