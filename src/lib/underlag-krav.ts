@@ -18,7 +18,6 @@ export const UNDERLAG_FALT: UnderlagFalt[] = [
   { label: 'Belopp', desc: 'Transaktionsbelopp', required: true },
   { label: 'Moms', desc: 'Momsbelopp', required: true },
   { label: 'Valuta*', desc: 'Krav om transaktionen inte är i SEK', required: true },
-  { label: 'Avgifter', desc: 'Provisioner eller avgifter', required: false },
 ];
 
 export const UNDERLAG_VALUTA_NOT =

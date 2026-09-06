@@ -161,7 +161,12 @@ export default function HomePage() {
           <ul className="space-y-2">
             {UNDERLAG_FALT.map(f => (
               <li key={f.label} className="flex items-center gap-2.5">
-                <span className={`w-[68px] text-center text-xs font-bold px-1.5 py-0.5 rounded-md flex-shrink-0 ${f.required ? 'bg-rose-100 text-rose-600' : 'bg-slate-200 text-slate-500'}`}>
+                <span
+                  className="w-[68px] text-center text-xs font-bold px-1.5 py-0.5 rounded-md flex-shrink-0"
+                  style={f.required
+                    ? { backgroundColor: `${NAV_BG}14`, color: NAV_BG }
+                    : { backgroundColor: '#F1F5F9', color: '#94A3B8' }}
+                >
                   {f.required ? 'Krav' : 'Bra att ha'}
                 </span>
                 <span className="text-sm font-semibold text-slate-700">{f.label}</span>

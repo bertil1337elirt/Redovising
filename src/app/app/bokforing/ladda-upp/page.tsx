@@ -135,7 +135,12 @@ export default function LaddaUppPage() {
           <div className="grid grid-cols-2 gap-3 mb-4">
             {UNDERLAG_FALT.map(f => (
               <div key={f.label} className="flex items-start gap-2.5 bg-slate-50 rounded-xl p-3">
-                <span className={`text-xs font-bold px-1.5 py-0.5 rounded-md mt-0.5 flex-shrink-0 ${f.required ? 'bg-rose-100 text-rose-600' : 'bg-slate-200 text-slate-500'}`}>
+                <span
+                  className="text-xs font-bold px-1.5 py-0.5 rounded-md mt-0.5 flex-shrink-0"
+                  style={f.required
+                    ? { backgroundColor: `${NAV_BG}14`, color: NAV_BG }
+                    : { backgroundColor: '#F1F5F9', color: '#94A3B8' }}
+                >
                   {f.required ? 'Krav' : 'Bra att ha'}
                 </span>
                 <div>
