@@ -92,6 +92,16 @@ export default function BokaMote() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, date: selectedDate, time: selectedTime, sessionId }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 409) {
+        // Tiden togs medan formuläret fylldes i. Tillbaka till kalendern med
+        // färska tider, annars klickar de bara på samma knapp igen.
+        setBookedSlots(await fetch('/api/booked-slots').then(r => r.json()).then(d => d.slots ?? {}));
+        setSelectedTime(null);
+        setStep('calendar');
+        setError(data.error || 'Tiden är tyvärr redan bokad. Välj en annan.');
+        return;
+      }
       if (!res.ok) throw new Error('Något gick fel');
       setStep('done');
     } catch {
@@ -270,7 +280,7 @@ export default function BokaMote() {
                         ? 'Alla tider är bokade — välj ett annat datum'
                         : `${freeCount} av ${TIME_SLOTS.length} tider lediga`}
                     </p>
-                    <div className="grid grid-cols-2 gap-2.5">
+                    <div className="grid grid-cols-3 gap-2.5">
                       {TIME_SLOTS.map(t => {
                         const booked = isSlotBooked(selectedDate, t, bookedSlots);
                         const isSelected = selectedTime === t;
@@ -279,7 +289,7 @@ export default function BokaMote() {
                             key={t}
                             disabled={booked}
                             onClick={() => setSelectedTime(t)}
-                            className="w-full py-4 rounded-xl text-base font-bold transition-all duration-150"
+                            className="w-full py-3.5 rounded-xl text-sm sm:text-base font-bold transition-all duration-150"
                             style={
                               booked
                                 ? { backgroundColor: '#f1f5f9', color: '#cbd5e1', cursor: 'default', textDecoration: 'line-through', border: '1.5px solid transparent' }
@@ -307,9 +317,10 @@ export default function BokaMote() {
 
             {/* Continue button */}
             <div className="px-6 sm:px-8 pb-6 sm:pb-8 pt-4 border-t border-gray-100">
+              {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
               <button
                 disabled={!selectedDate || !selectedTime}
-                onClick={() => setStep('form')}
+                onClick={() => { setError(''); setStep('form'); }}
                 className="w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ backgroundColor: NAV_BG, color: 'white' }}
               >

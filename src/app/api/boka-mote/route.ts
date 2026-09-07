@@ -3,6 +3,9 @@ import { Resend } from 'resend';
 import { sendAndLog, INTERNAL_NOTICE_TO } from '@/lib/email-log';
 import { createClient } from '@supabase/supabase-js';
 import { meetingConfirmationEmail } from '@/lib/emails/meeting-confirmation';
+import { createMeetingEvent } from '@/lib/googleCalendar';
+import { isSlotTaken, SLOT_TAKEN_MESSAGE } from '@/lib/meetingAvailability';
+import { TIME_SLOTS } from '@/lib/meetingSlots';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -27,8 +30,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Namn, email, datum och tid krävs' }, { status: 400 });
     }
 
+    if (!TIME_SLOTS.includes(time)) {
+      return NextResponse.json({ error: 'Ogiltig tid' }, { status: 400 });
+    }
+
     const supabase = getSupabase();
+
+    // Sista kollen innan vi sparar. Besökarens lista över lediga tider hämtades
+    // innan formuläret fylldes i, så tiden kan ha blivit tagen under tiden.
+    if (await isSlotTaken(supabase, date, time)) {
+      return NextResponse.json({ error: SLOT_TAKEN_MESSAGE }, { status: 409 });
+    }
+
     await supabase.from('meetings').insert({ name, email, phone: phone || null, date, time, message: message || null, session_id: sessionId || null, source: 'boka-mote' });
+
+    await createMeetingEvent({ name, email, phone, date, time, message, source: 'boka-mote' });
 
     const formattedDate = formatDate(date);
 

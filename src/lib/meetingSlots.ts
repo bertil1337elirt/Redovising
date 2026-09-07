@@ -1,35 +1,16 @@
-export const TIME_SLOTS = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00'];
+export const TIME_SLOTS = [
+  '09:00', '10:00', '11:00', '12:00',
+  '13:00', '14:00', '15:00', '16:00', '17:00',
+  '18:00', '19:00', '20:00',
+];
 
-// Hur ofta en tid ser upptagen ut (av 10 dagar). Tiderna folk helst vill ha
-// lämnas nästan alltid lediga — det som blockas är tidigt på morgonen, direkt
-// efter lunch och sent på eftermiddagen.
-const SLOT_LOAD: Record<string, number> = {
-  '09:00': 5,
-  '10:00': 1,
-  '11:00': 1,
-  '13:00': 4,
-  '14:00': 1,
-  '15:00': 4,
-};
-
-function simpleHash(str: string): number {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
-  }
-  return h;
-}
-
-export function isSlotFakeBooked(date: string, time: string): boolean {
-  return Math.abs(simpleHash(date + time)) % 10 < (SLOT_LOAD[time] ?? 3);
-}
-
+/** Upptagen = bokad hos oss eller upptagen i Eriks Google-kalender. */
 export function isSlotBooked(
   date: string,
   time: string,
   bookedSlots: Record<string, string[]>
 ): boolean {
-  return isSlotFakeBooked(date, time) || (bookedSlots[date]?.includes(time) ?? false);
+  return bookedSlots[date]?.includes(time) ?? false;
 }
 
 export function toDateStr(y: number, m: number, d: number) {

@@ -4,6 +4,9 @@ import { sendAndLog, INTERNAL_NOTICE_TO } from '@/lib/email-log';
 import { createClient } from '@supabase/supabase-js';
 import { questions } from '@/data/kvalificera-questions';
 import { meetingConfirmationEmail, formatMeetingSlot } from '@/lib/emails/meeting-confirmation';
+import { createMeetingEvent } from '@/lib/googleCalendar';
+import { isSlotTaken, SLOT_TAKEN_MESSAGE } from '@/lib/meetingAvailability';
+import { TIME_SLOTS } from '@/lib/meetingSlots';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -47,6 +50,17 @@ export async function POST(request: NextRequest) {
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
+    // Kollen ligger före allt sparande: säger vi nej till tiden ska varken lead
+    // eller mejl bli kvar. Besökaren står kvar i popupen och väljer en ny tid.
+    if (hasMeeting) {
+      if (!TIME_SLOTS.includes(meetingTime)) {
+        return NextResponse.json({ error: 'Ogiltig tid' }, { status: 400 });
+      }
+      if (await isSlotTaken(supabase, meetingDate, meetingTime)) {
+        return NextResponse.json({ error: SLOT_TAKEN_MESSAGE }, { status: 409 });
+      }
+    }
+
     await supabase.from('contact_requests').insert({
       name: name || null,
       email,
@@ -69,6 +83,16 @@ export async function POST(request: NextRequest) {
         date: meetingDate,
         time: meetingTime,
         message: notes || null,
+        source: 'popup',
+      });
+
+      await createMeetingEvent({
+        name: name || 'Namn saknas',
+        email,
+        phone,
+        date: meetingDate,
+        time: meetingTime,
+        message: notes,
         source: 'popup',
       });
     }
